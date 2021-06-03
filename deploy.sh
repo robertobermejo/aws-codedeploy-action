@@ -42,10 +42,9 @@ export AWS_DEFAULT_REGION=$INPUT_AWS_REGION
 
 # 3) Upload the deployment to S3, drop old archive.
 function getArchiveETag() {
-  echo "::debug::--bucket $INPUT_S3_BUCKET --key $INPUT_S3_FOLDER/$ZIP_FILENAME"
-    aws s3api head-object \
+  aws s3api head-object \
      --bucket "$INPUT_S3_BUCKET" \
-     --key "$INPUT_S3_FOLDER"/"$ZIP_FILENAME" \
+     --key "$INPUT_S3_FOLDER" \
      --query ETag --output text
 }
 
