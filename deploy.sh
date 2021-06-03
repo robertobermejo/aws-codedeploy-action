@@ -40,15 +40,6 @@ export AWS_ACCESS_KEY_ID=$INPUT_AWS_ACCESS_KEY
 export AWS_SECRET_ACCESS_KEY=$INPUT_AWS_SECRET_KEY
 export AWS_DEFAULT_REGION=$INPUT_AWS_REGION
 
-# 2) Zip up the package
-DIR_TO_ZIP="./$INPUT_DIRECTORY"
-if [ ! -f "$DIR_TO_ZIP/appspec.yml" ]; then
-    echo "::error::appspec.yml was not located at: $DIR_TO_ZIP"
-    exit 1;
-fi
-
-echo "::debug::Zip directory located (with appspec.yml)."
-
 # 3) Upload the deployment to S3, drop old archive.
 function getArchiveETag() {
     aws s3api head-object \
