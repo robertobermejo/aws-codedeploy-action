@@ -58,11 +58,10 @@ function getS3Folder() {
 }
 
 function fileExists() {
-  echo $1
   aws s3api head-object \
      --bucket "$INPUT_S3_BUCKET" \
      --key "$1" \
-     --query ETag --output text > /dev/null 2>&1 && return true || return false
+     --query ETag --output text > /dev/null 2>&1 && return 1 || return 0
 }
 
 if [ "$INPUT_CODEBUILD_ID" ]; then
