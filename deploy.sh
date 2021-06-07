@@ -59,7 +59,7 @@ fi
 
 while fileExists $INPUT_S3_FOLDER; do
   sleep 5
-  echo "::debug::waiting File not exists."
+  echo "::debug::waiting File $INPUT_S3_FOLDER not exists."
 done
 
 # 3) Upload the deployment to S3, drop old archive.
