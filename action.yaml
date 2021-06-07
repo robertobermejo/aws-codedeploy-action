@@ -42,6 +42,9 @@ inputs:
     description: 'Max amount of iterations (15s increments) to wait for a deployment'
     required: false
     default: '60'
+  codebuild_id:
+    description: 'Build ID from Codebuild for CodeDeploy Assets'
+    required: true
 runs:
     using: 'docker'
     image: 'Dockerfile'
