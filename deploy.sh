@@ -7,6 +7,7 @@ GREEN='\033[0;32m'
 ORANGE='\033[0;33m'
 BLUE='\033[0;34m'
 
+
 # 0) Validation
 if [ -z "$INPUT_CODEDEPLOY_NAME" ]; then
     echo "::error::codedeploy_name is required and must not be empty."
@@ -39,6 +40,40 @@ echo "::debug::Input variables correctly validated."
 export AWS_ACCESS_KEY_ID=$INPUT_AWS_ACCESS_KEY
 export AWS_SECRET_ACCESS_KEY=$INPUT_AWS_SECRET_KEY
 export AWS_DEFAULT_REGION=$INPUT_AWS_REGION
+
+if [ "$INPUT_CODEBUILD_ID" ]; then
+  echo "::debug::codebuild_id is present. traying to load s3 folder from that build."
+  aws codebuild batch-get-builds --ids $INPUT_CODEBUILD_ID | jq --raw-output '.builds|first.artifacts.location' | sed -E 's/arn:aws:s3:::([^\/]+)\/(.+)/\2/gm;t'
+fi
+
+function fileExists() {
+  aws s3api head-object \
+     --bucket "$INPUT_S3_BUCKET" \
+     --key "$1" \
+     --query ETag --output text > /dev/null 2>&1 && return 1 || return 0
+}
+
+function getS3Folder() {
+  aws codebuild batch-get-builds --ids $INPUT_CODEBUILD_ID | jq --raw-output '.builds|first.artifacts.location' | sed -E 's/arn:aws:s3:::([^\/]+)\/(.+)/\2/gm;t'
+}
+
+function fileExists() {
+  echo $1
+  aws s3api head-object \
+     --bucket "$INPUT_S3_BUCKET" \
+     --key "$1" \
+     --query ETag --output text > /dev/null 2>&1 && return true || return false
+}
+
+if [ "$INPUT_CODEBUILD_ID" ]; then
+  echo "::debug::codebuild_id is present. traying to load s3 folder from that build."
+  INPUT_S3_BUCKET=$(aws codebuild batch-get-builds --ids $INPUT_CODEBUILD_ID | jq --raw-output '.builds|first.artifacts.location' | sed -E 's/arn:aws:s3:::([^\/]+)\/(.+)/\1/gm;t')
+  INPUT_S3_FOLDER=$(aws codebuild batch-get-builds --ids $INPUT_CODEBUILD_ID | jq --raw-output '.builds|first.artifacts.location' | sed -E 's/arn:aws:s3:::([^\/]+)\/(.+)/\2/gm;t')
+fi
+while fileExists $INPUT_S3_FOLDER; do
+  sleep 5
+  echo "::debug::waiting File not exists."
+done
 
 # 3) Upload the deployment to S3, drop old archive.
 function getArchiveETag() {
