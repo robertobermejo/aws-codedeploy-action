@@ -145,14 +145,14 @@ function deployRevision() {
         --application-name "$INPUT_CODEDEPLOY_NAME" \
         --deployment-group-name "$INPUT_CODEDEPLOY_GROUP" \
         --description "$GITHUB_REF - $GITHUB_SHA" \
-        --s3-location bucket="$INPUT_S3_BUCKET",bundleType=zip,key="$INPUT_S3_FOLDER"/"$ZIP_FILENAME" | jq -r '.deploymentId'
+        --s3-location bucket="$INPUT_S3_BUCKET",bundleType=zip,key="$INPUT_S3_FOLDER" | jq -r '.deploymentId'
 }
 
 function registerRevision() {
     aws deploy register-application-revision \
         --application-name "$INPUT_CODEDEPLOY_NAME" \
         --description "$GITHUB_REF - $GITHUB_SHA" \
-        --s3-location bucket="$INPUT_S3_BUCKET",bundleType=zip,key="$INPUT_S3_FOLDER"/"$ZIP_FILENAME" > /dev/null 2>&1
+        --s3-location bucket="$INPUT_S3_BUCKET",bundleType=zip,key="$INPUT_S3_FOLDER" > /dev/null 2>&1
 }
 
 if $INPUT_CODEDEPLOY_REGISTER_ONLY; then
