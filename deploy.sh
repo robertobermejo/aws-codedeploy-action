@@ -37,8 +37,6 @@ fi
 echo "::debug::Input variables correctly validated."
 
 # 1) Load our permissions in for aws-cli
-export AWS_ACCESS_KEY_ID=$INPUT_AWS_ACCESS_KEY
-export AWS_SECRET_ACCESS_KEY=$INPUT_AWS_SECRET_KEY
 export AWS_DEFAULT_REGION=$INPUT_AWS_REGION
 
 function fileExists() {
