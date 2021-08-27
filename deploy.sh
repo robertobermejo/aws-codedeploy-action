@@ -41,8 +41,8 @@ export AWS_DEFAULT_REGION=$INPUT_AWS_REGION
 
 function fileExists() {
   aws s3api head-object \
-     --bucket "$INPUT_S3_BUCKET" \
-     --key "$1" \
+     --bucket "$1" \
+     --key "$2" \
      --query ETag --output text > /dev/null 2>&1 && return 1 || return 0
 }
 
@@ -52,12 +52,12 @@ if [ "$INPUT_CODEBUILD_ID" ]; then
   INPUT_S3_BUCKET=$(aws codebuild batch-get-builds --ids $INPUT_CODEBUILD_ID | jq --raw-output '.builds|first.artifacts.location' | sed -E 's/arn:aws:s3:::([^\/]+)\/(.+)/\1/gm;t')
   INPUT_S3_FOLDER=$(aws codebuild batch-get-builds --ids $INPUT_CODEBUILD_ID | jq --raw-output '.builds|first.artifacts.location' | sed -E 's/arn:aws:s3:::([^\/]+)\/(.+)/\2/gm;t')
   echo "::set-output name=BUCKET::${INPUT_S3_BUCKET}"
-  echo "::set-output name=FOLDER::${INPUT_S3_BUCKET}"
+  echo "::set-output name=FOLDER::${INPUT_S3_FOLDER}"
 fi
 
-while fileExists $INPUT_S3_FOLDER; do
+while fileExists $INPUT_S3_BUCKET $INPUT_S3_FOLDER; do
   sleep 5
-  echo "::debug::waiting File $INPUT_S3_FOLDER not exists."
+  echo "::debug::waiting File $INPUT_S3_BUCKET/$INPUT_S3_FOLDER not exists."
 done
 
 # 3) Upload the deployment to S3, drop old archive.
