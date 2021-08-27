@@ -55,11 +55,6 @@ if [ "$INPUT_CODEBUILD_ID" ]; then
   echo "::set-output name=FOLDER::${INPUT_S3_FOLDER}"
 fi
 
-while fileExists $INPUT_S3_BUCKET $INPUT_S3_FOLDER; do
-  sleep 5
-  echo "::debug::waiting File $INPUT_S3_BUCKET/$INPUT_S3_FOLDER not exists."
-done
-
 # 3) Upload the deployment to S3, drop old archive.
 function getArchiveETag() {
   aws s3api head-object \
