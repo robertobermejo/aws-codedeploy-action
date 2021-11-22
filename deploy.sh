@@ -63,9 +63,9 @@ function getArchiveETag() {
      --query ETag --output text
 }
 
-ZIP_ETAG=$(getArchiveETag)
+# ZIP_ETAG=$(getArchiveETag)
 
-echo "::debug::Obtained ETag of uploaded S3 Zip Archive."
+# echo "::debug::Obtained ETag of uploaded S3 Zip Archive."
 
 # 4) Start the CodeDeploy
 function getActiveDeployments() {
